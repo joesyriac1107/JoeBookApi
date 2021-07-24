@@ -2,10 +2,6 @@ const User = require('../modals/user')
 const router = require('express').Router()
 const bcrypt = require('bcrypt')
 
-router.get('/', (req, res) => {
-  res.send('hey its user route')
-})
-
 //update user
 router.put('/:id', async (req, res) => {
   const modifiedUserDetails = req.body
