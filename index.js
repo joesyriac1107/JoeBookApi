@@ -7,6 +7,7 @@ const morgan = require('morgan')
 const userRoute = require('./routes/users')
 const authRoute = require('./routes/auth')
 const postRoute = require('./routes/posts')
+const storageRoute = require('./routes/storage')
 
 const run = async () => {
   dotenv.config()
@@ -40,6 +41,7 @@ const run = async () => {
   app.use('/api/posts', postRoute)
   app.use('/api/users', userRoute)
   app.use('/api/auth', authRoute)
+  app.use('/api/storage', storageRoute)
 
   app.get('/', (req, res) => {
     res.send('welcome to homepage')
