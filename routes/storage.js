@@ -36,10 +36,6 @@ const uploadFileToBlob = async (file, containerName) => {
 
   // get Container - full public read access
   const containerClient = blobService.getContainerClient(containerName)
-  await containerClient.createIfNotExists({
-    access: 'container',
-  })
-
   // upload file
   await createBlobInContainer(containerClient, file)
 }
@@ -55,8 +51,8 @@ router.post('/createContainer', async (req, res) => {
 
 router.post('/upload', async (req, res) => {
   try {
-    await createContainer(req.body.id)
-    res.status(200).send('Container Created')
+    await uploadFileToBlob(req.file,req.containerName)
+    res.status(200).send('File Uploaded Created')
   } catch (err) {
     res.status(500).json(err)
   }
