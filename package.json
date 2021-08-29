@@ -16,6 +16,7 @@
     "helmet": "^4.6.0",
     "mongoose": "^5.13.2",
     "morgan": "^1.10.0",
+    "multiparty": "^4.2.2",
     "nodemon": "^2.0.9"
   }
 }

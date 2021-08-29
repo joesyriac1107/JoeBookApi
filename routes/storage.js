@@ -1,4 +1,5 @@
 const router = require('express').Router()
+const multiparty = require('multiparty')
 
 const { BlobServiceClient, ContainerClient } = require('@azure/storage-blob')
 const sasToken = process.env.SAS_TOKEN
@@ -17,18 +18,17 @@ const createContainer = async (containerName) => {
   } catch (err) {}
 }
 
-const createBlobInContainer = async (containerClient, file) => {
+const createBlobInContainer = async (containerClient, file, fileName) => {
   // create blobClient for container
-  const blobClient = containerClient.getBlockBlobClient(file.name)
+  const blobClient = containerClient.getBlockBlobClient(fileName)
 
   // set mimetype as determined from browser with file upload control
-  const options = { blobHTTPHeaders: { blobContentType: file.type } }
 
   // upload file
-  await blobClient.uploadBrowserData(file, options)
+  await blobClient.uploadFile(file.path)
 }
 
-const uploadFileToBlob = async (file, containerName) => {
+const uploadFileToBlob = async (file, fileName, containerName) => {
   if (!file) return []
 
   // get BlobService = notice `?` is pulled out of sasToken - if created in Azure portal
@@ -37,7 +37,7 @@ const uploadFileToBlob = async (file, containerName) => {
   // get Container - full public read access
   const containerClient = blobService.getContainerClient(containerName)
   // upload file
-  await createBlobInContainer(containerClient, file)
+  await createBlobInContainer(containerClient, file, fileName)
 }
 
 router.post('/createContainer', async (req, res) => {
@@ -50,12 +50,11 @@ router.post('/createContainer', async (req, res) => {
 })
 
 router.post('/upload', async (req, res) => {
-  try {
-    await uploadFileToBlob(req.file,req.containerName)
-    res.status(200).send('File Uploaded Created')
-  } catch (err) {
-    res.status(500).json(err)
-  }
+  const form = new multiparty.Form()
+  form.parse(req, async function (err, fields, files) {
+    await uploadFileToBlob(files.file[0], fields.fileName, fields.containerName)
+    res.status(200).send('File uploaded successfully')
+  })
 })
 
 module.exports = router
