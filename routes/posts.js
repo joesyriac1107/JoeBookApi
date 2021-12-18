@@ -90,7 +90,33 @@ router.get('/:id/timeline', async (req, res) => {
       })
     )
 
-    res.status(200).json(userPosts.concat(...friendPosts))
+    res.status(200).json(
+      userPosts.concat(...friendPosts).sort((a, b) => {
+        const dateA = new Date(a.createdAt)
+        const dateB = new Date(b.createdAt)
+        if (dateB.getTime() > dateA.getTime()) return 1
+        else return -1
+      })
+    )
+  } catch (err) {
+    res.status(500).json(err)
+  }
+})
+
+// get users all posts
+router.get('/profile/:userId', async (req, res) => {
+  let postArray = []
+  try {
+    const userPosts = await Post.find({ userId: req.params.userId })
+
+    res.status(200).json(
+      userPosts.sort((a, b) => {
+        const dateA = new Date(a.createdAt)
+        const dateB = new Date(b.createdAt)
+        if (dateB.getTime() > dateA.getTime()) return 1
+        else return -1
+      })
+    )
   } catch (err) {
     res.status(500).json(err)
   }

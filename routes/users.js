@@ -4,17 +4,17 @@ const bcrypt = require('bcrypt')
 
 //update user
 router.put('/:id', async (req, res) => {
-  const modifiedUserDetails = req.body
+  let modifiedUserDetails = req.body
   if (req.body.userId == req.params.id || req.body.isAdmin) {
     if (req.body.password) {
       try {
         const salt = await bcrypt.genSalt(10)
         const password = await bcrypt.hash(req.body.password, salt)
+        modifiedUserDetails = { ...modifiedUserDetails, password }
       } catch (err) {
         return res.status(500).json(err)
       }
     }
-    modifiedUserDetails = { ...modifiedUserDetails, password }
     try {
       const user = await User.findByIdAndUpdate(req.params.id, {
         $set: modifiedUserDetails,

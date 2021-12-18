@@ -8,6 +8,7 @@ const userRoute = require('./routes/users')
 const authRoute = require('./routes/auth')
 const postRoute = require('./routes/posts')
 const storageRoute = require('./routes/storage')
+const cors = require('cors')
 
 const run = async () => {
   dotenv.config()
@@ -33,6 +34,12 @@ const run = async () => {
   } catch (err) {
     console.log('DB connection failed')
   }
+
+  app.use(
+    cors({
+      origin: '*',
+    })
+  )
   //middleware
   app.use(express.json())
   app.use(helmet())
